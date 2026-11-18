@@ -1,0 +1,38 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish,es-noquoting]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2cm]{geometry}
+\usepackage{booktabs}
+\usepackage[hidelinks]{hyperref}
+\input{datos}
+\pagestyle{empty}
+\begin{document}
+\begin{center}
+{\large\bfseries \MakeUppercase{\universidad}\par}
+\facultad\par Carrera de \carrera\par
+\vspace{0.8cm}
+{\bfseries \asignatura} -- \nivel\par
+\actividad\par
+\vspace{0.6cm}
+{\large\bfseries \proyecto\par}
+\vspace{0.8cm}
+\begin{tabular}{ll}
+\toprule
+\textbf{Integrante} & \textbf{Rol} \\
+\midrule
+\integranteA & \rolA \\
+\integranteB & \rolB \\
+\integranteC & \rolC \\
+\bottomrule
+\end{tabular}
+\par\vspace{0.6cm}
+Docente: \docente\par
+Periodo académico: \periodo\par
+Fecha de entrega: \fechaentrega\par
+\vspace{0.8cm}
+\textbf{Repositorio:}\par\vspace{0.2cm}
+\mbox{\url{\repo}}
+\end{center}
+\end{document}

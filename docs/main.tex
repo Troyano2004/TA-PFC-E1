@@ -1,0 +1,29 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[spanish,es-noquoting]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{xurl}
+\usepackage[hidelinks]{hyperref}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=ieee]{biblatex}
+\addbibresource{referencias.bib}
+
+\input{datos}
+
+\begin{document}
+\input{secciones/00-portada}
+
+\tableofcontents
+\newpage
+
+% Las secciones se irán agregando aquí:
+% \input{secciones/01-resumen}
+% \input{secciones/02-contexto}
+% ...
+
+\printbibliography[heading=bibintoc,title={Referencias}]
+\end{document}
