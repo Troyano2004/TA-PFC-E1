@@ -1,0 +1,47 @@
+\section{Modelo de comunicación entre servicios}\label{sec:comunicacion}
+
+La regla que seguimos sale del ADR-002: si alguien espera la respuesta para seguir, la interacción es síncrona por REST; si solo hay que avisar de algo que ya pasó, es asíncrona por RabbitMQ. Toda llamada síncrona entre servicios tiene un tiempo límite. La tabla~\ref{tab:interacciones} recorre cada flecha del diagrama de contenedores (figura~\ref{fig:c4n2}).
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{0.8cm}L{3.1cm}L{1.8cm}L{2.6cm}L{5.1cm}L{1.3cm}@{}}
+\caption{Interacciones entre contenedores}\label{tab:interacciones}\\
+\toprule
+Id & Origen $\to$ destino & Tipo & Mecanismo & Justificación & Entrega \\
+\midrule
+\endfirsthead
+\toprule
+Id & Origen $\to$ destino & Tipo & Mecanismo & Justificación & Entrega \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+I01 & Aplicación web $\to$ API Gateway & Síncrona & REST, HTTPS con JSON & El usuario espera la respuesta en pantalla. Es lo que el navegador usa sin nada extra. & E2 \\
+I02 & API Gateway $\to$ aplicación web & Asíncrona & WebSocket con STOMP & Avisos en tiempo real (documento observado, sustentación agendada). El servidor empuja el aviso; uteq-export ya lo hace así. & E2 \\
+I03 & API Gateway $\to$ ms-usuarios & Síncrona & REST & Inicio de sesión, perfil y gestión de usuarios. El gateway valida el JWT con la clave pública, sin llamar a ms-usuarios en cada petición. & E2 \\
+I04 & API Gateway $\to$ ms-propuestas & Síncrona & REST & Registro y consulta de propuestas, decisión de la comisión. & E2 \\
+I05 & API Gateway $\to$ ms-documentos & Síncrona & REST (multipart para archivos) & Subida y consulta de versiones del documento, observaciones del director. & E2 \\
+I06 & API Gateway $\to$ ms-evaluacion & Síncrona & REST & Tribunal, notas de sustentación y descarga de actas. & E2 \\
+I07 & API Gateway $\to$ ms-notificaciones & Asíncrona & WebSocket con STOMP (el gateway hace de proxy) & Mantiene abierta la conexión del navegador con el servicio que emite los avisos. & E2 \\
+I08 & API Gateway $\to$ uteq-export & Síncrona & REST & Rutas que todavía no se migran: complexivo, reportes, respaldos e importación del SGA. & E2 \\
+I09 & ms-propuestas $\to$ ms-usuarios & Síncrona & REST, \texttt{GET}~\path|/api/usuarios/{id}|, tiempo límite de 2000~ms & ms-propuestas solo guarda los id del estudiante y del tutor, y para mostrar la propuesta necesita sus datos en ese momento. Es la interacción del esqueleto de E1. & E1 \\
+I10 & ms-documentos $\to$ ms-propuestas & Síncrona & REST & Antes de aceptar el primer documento hay que confirmar que la propuesta está APROBADA. Sin esa respuesta no se puede seguir. & E2 \\
+I11 & ms-evaluacion $\to$ ms-documentos & Síncrona & REST & Antes de asignar tribunal hay que confirmar que el director aprobó el documento. & E2 \\
+I12 & ms-evaluacion $\to$ ms-usuarios & Síncrona & REST & Nombres y roles de los miembros del tribunal para el acta. Desde E2 se guardan en caché porque cambian poco. & E2 \\
+I13 & ms-propuestas $\to$ RabbitMQ & Asíncrona & AMQP, evento \path{propuesta.decidida} & La decisión ya quedó guardada; el aviso puede llegar segundos después. Si el broker falla, la decisión no se pierde. & E2 \\
+I14 & ms-documentos $\to$ RabbitMQ & Asíncrona & AMQP, eventos \path{documento.enviado}, \path{documento.observado}, \path{documento.aprobado} & Igual que I13. Son los avisos que hoy envía uteq-export por WebSocket. & E2 \\
+I15 & ms-evaluacion $\to$ RabbitMQ & Asíncrona & AMQP, eventos \path{sustentacion.agendada}, \path{acta.generada} & Igual que I13. & E2 \\
+I16 & RabbitMQ $\to$ ms-notificaciones & Asíncrona & AMQP (consumo de la cola) & Un solo servicio arma y envía todos los avisos. Los eventos repetidos se descartan por su id. & E2 \\
+I17 & ms-notificaciones $\to$ servidor de correo & Asíncrona para el usuario & SMTP & El correo sale fuera de la petición del usuario; si el servidor de correo tarda, nadie se queda esperando. & E2 \\
+I18 & ms-documentos $\to$ Google Drive & Síncrona & REST, HTTPS (API de Drive v3) & El archivo tiene que quedar guardado antes de confirmar la entrega. Es la integración que ya usa uteq-export. & E2 \\
+I19 & ms-propuestas $\to$ servicios de IA & Síncrona con tiempo límite & REST, HTTPS & Revisión asistida que pide el coordinador. Si el servicio externo no responde, la propuesta sigue sin esa revisión. & E2 \\
+I20 & ms-documentos $\to$ servicios de IA & Síncrona, fuera de la petición del estudiante & REST, HTTPS & Detección de texto generado. Primero se guarda el documento y la revisión corre después, para que una demora externa no bloquee la entrega. & E2 \\
+I21 & ms-evaluacion $\to$ Zoom & Síncrona & REST, HTTPS (API de Zoom) & Crear la reunión cuando la sustentación es virtual. & E2 \\
+I22 & Cada servicio $\to$ su base de datos & Síncrona & JDBC sobre PostgreSQL & Cada servicio es dueño de sus datos y ningún servicio lee la base de otro. En E1 los datos están en memoria. & E3 \\
+\end{longtable}
+\endgroup
+
+En PE-U1 el equipo comparó sockets TCP y gRPC entre tres nodos en una misma máquina. Al cerrar esta entrega los resultados finales de esa práctica todavía no estaban publicados en su repositorio, así que esta decisión no usa sus cifras. Se apoya en el tipo de llamada: las llamadas síncronas entre servicios (I09 a I12) llevan un solo objeto pequeño, y el presupuesto de RNF-01 es de 500~ms para la petición completa, así que la ventaja de latencia de un protocolo binario pesa poco frente a lo que se gana con REST: el navegador lo entiende sin un proxy y se prueba con \texttt{curl}. Lo que se mida en E2 con la prueba de carga de RNF-01 dirá si esta elección hay que revisarla.
+
+Para los avisos usamos RabbitMQ y no Kafka: solo necesitamos una cola, no un registro de eventos para volver a procesar, y Kamiński et al.~\cite{kaminski2025rabbitmq} midieron que con Spring Boot RabbitMQ usó cerca de 29\,\% menos memoria y respondió alrededor de 25\,\% más rápido que Kafka.
