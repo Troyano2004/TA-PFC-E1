@@ -1,0 +1,106 @@
+\section{Requisitos no funcionales}\label{sec:rnf}
+
+Cada requisito tiene un número que se puede medir, la característica y la subcaracterística de ISO/IEC 25010 a la que pertenece, la forma de medirlo y la entrega en la que se comprueba. Las secciones de arquitectura citan estos identificadores.
+
+Usamos el modelo de calidad del producto de ISO/IEC 25010 en su revisión de 2023, que tiene nueve características, con los nombres en español del portal iSO25000\footnote{\url{https://iso25000.com/index.php/normas-iso-25000/iso-25010}}. Frente a la versión de 2011, \enquote{Portabilidad} pasó a llamarse \enquote{Flexibilidad} y ahora incluye \enquote{Escalabilidad}, \enquote{Usabilidad} pasó a ser \enquote{Capacidad de interacción} y se agregó \enquote{Protección}.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{1.3cm}L{5.8cm}L{2.5cm}L{2.7cm}L{2.6cm}@{}}
+\caption{Resumen de los requisitos no funcionales}\label{tab:rnf}\\
+\toprule
+Id & Requisito en una línea & Característica & Subcaracterística & Se comprueba en \\
+\midrule
+\endfirsthead
+\toprule
+Id & Requisito en una línea & Característica & Subcaracterística & Se comprueba en \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+RNF-01 & p95 de las consultas de estado menor a 500~ms con 150 usuarios simultáneos & Eficiencia de desempeño & Comportamiento temporal & E2 (línea base) y E4 \\
+RNF-02 & 60 subidas de PDF de 10~MB por minuto durante 15 minutos sin errores & Eficiencia de desempeño & Capacidad & E2 y E4 \\
+RNF-03 & Con dos instancias de ms-documentos, al menos 60\,\% más subidas por minuto & Flexibilidad & Escalabilidad & E4 \\
+RNF-04 & Recepción de documentos disponible el 99,5\,\% de las 72 horas previas a una fecha límite & Fiabilidad & Disponibilidad & E4 \\
+RNF-05 & La caída de un servicio no detiene a los demás; 503 en menos de 2,5~s & Fiabilidad & Tolerancia a fallos & E1 (parcial), E2 y E4 \\
+RNF-06 & Un servicio caído vuelve solo en menos de 60~s sin perder notas ni actas & Fiabilidad & Capacidad de recuperación & E3 y E4 \\
+RNF-07 & Ninguna nota confirmada ni acta generada se modifica; toda corrección queda auditada & Seguridad & Integridad & E3 y E4 \\
+RNF-08 & El 100\,\% de los endpoints de negocio rechaza con 401 las peticiones sin JWT válido & Seguridad & Autenticidad & E2 y E4 \\
+RNF-09 & Desplegar ms-propuestas sin cortar la subida de documentos & Mantenibilidad & Modularidad & E2 y E4 \\
+\end{longtable}
+\endgroup
+
+\subsection*{RNF-01. Tiempo de respuesta de las consultas en una fecha límite}
+\begin{itemize}
+  \item Requisito: con 150 usuarios simultáneos, el 95\,\% de las consultas de estado de propuesta y de documento responde en menos de 500~ms, y ninguna tarda más de 2~s. El tiempo se mide en el API Gateway.
+  \item Característica: Eficiencia de desempeño. Subcaracterística: Comportamiento temporal.
+  \item Cómo se mide: prueba de carga con k6, 150 usuarios virtuales durante 10 minutos que consultan su propuesta y su documento con una pausa de 1 a 3~s entre peticiones. Se toma el percentil 95 (p95) y el máximo del tiempo de respuesta.
+  \item Por qué 150: es nuestra estimación de estudiantes y docentes conectados a la vez en la última hora antes de una fecha límite. Se ajusta con el número de estudiantes en titulación que dé la coordinación.
+  \item Origen: RNF-01 del documento de Aplicaciones Web, cuya fuente es el equipo de análisis (respuesta en menos de 3~s para el 95\,\% de las solicitudes). Aquí se pide más, y con usuarios simultáneos, porque las fechas límite vienen de RB-03 de ese documento, cuya fuente es la coordinación de carrera, y del Reglamento de la UIC (Art.~49).
+\end{itemize}
+
+\subsection*{RNF-02. Capacidad de recepción de documentos}
+\begin{itemize}
+  \item Requisito: el sistema recibe 60 documentos PDF de hasta 10~MB por minuto durante 15 minutos seguidos sin rechazar ninguno, y el 95\,\% de las subidas termina en menos de 8~s en la red del laboratorio.
+  \item Característica: Eficiencia de desempeño. Subcaracterística: Capacidad.
+  \item Cómo se mide: k6 envía un PDF de 10~MB por segundo durante 15 minutos. Se cuentan las respuestas con error, que deben ser 0, y se calcula el p95 del tiempo de subida.
+  \item Origen: análisis del equipo a partir de los plazos del Reglamento de la UIC. El límite de 10~MB por archivo viene de HU-01 del documento de Aplicaciones Web.
+\end{itemize}
+
+\subsection*{RNF-03. Escalabilidad de la recepción de documentos}
+\begin{itemize}
+  \item Requisito: al pasar de una a dos instancias de ms-documentos, sin cambiar código, la cantidad máxima de subidas atendidas por minuto aumenta al menos 60\,\%.
+  \item Característica: Flexibilidad. Subcaracterística: Escalabilidad.
+  \item Cómo se mide: se sube la carga de RNF-02 hasta que aparecen errores o el p95 pasa de 8~s, primero con una instancia y luego con dos (\texttt{docker compose up -{}-scale ms-documentos=2}). Se comparan las subidas por minuto en el punto de saturación.
+  \item Origen: ADR-001 (escalar solo la parte que recibe el pico).
+\end{itemize}
+
+\subsection*{RNF-04. Disponibilidad en el periodo de entregas}
+\begin{itemize}
+  \item Requisito: durante las 72 horas previas a cada fecha límite, la recepción de documentos está disponible el 99,5\,\% del tiempo, es decir, como máximo 21 minutos fuera de servicio en total y nunca más de 5 minutos seguidos.
+  \item Característica: Fiabilidad. Subcaracterística: Disponibilidad.
+  \item Cómo se mide: un monitor consulta cada 60~s \texttt{/actuator/health} de ms-documentos y hace una subida de prueba de 100~KB. Disponibilidad = minutos con respuesta correcta / minutos totales.
+  \item Origen: RNF-02 del documento de Aplicaciones Web, cuya fuente es el equipo de análisis, que pide una disponibilidad de al menos 95\,\% durante el semestre. Aquí la exigencia se concentra en las 72 horas previas a cada fecha límite, que es cuando una caída impide entregar.
+\end{itemize}
+
+\subsection*{RNF-05. Aislamiento de fallos entre servicios}
+\begin{itemize}
+  \item Requisito: si ms-evaluacion, ms-notificaciones o un servicio externo (IA, correo) están caídos, la subida de documentos y la consulta de propuestas siguen respondiendo con éxito. Si ms-usuarios no responde, ms-propuestas contesta 503 en menos de 2,5~s y no deja peticiones colgadas.
+  \item Característica: Fiabilidad. Subcaracterística: Tolerancia a fallos.
+  \item Cómo se mide: durante una prueba de carga se detiene un servicio a la vez con \texttt{docker stop} y se revisan los códigos de respuesta y los tiempos de los demás.
+  \item En E1 ya se comprueba la segunda parte con el esqueleto: con ms-usuarios apagado, \texttt{GET}~\path{/api/propuestas/1} responde 503. El tiempo límite está en \path{USUARIOS_TIMEOUT_MS}, de 2000~ms por defecto.
+  \item Origen: ADR-001 y ADR-002.
+\end{itemize}
+
+\subsection*{RNF-06. Recuperación después de una caída}
+\begin{itemize}
+  \item Requisito: un servicio que se detiene por un error vuelve a atender peticiones en menos de 60~s sin que nadie lo reinicie a mano, y no se pierde ninguna calificación ni acta confirmada antes de la caída.
+  \item Característica: Fiabilidad. Subcaracterística: Capacidad de recuperación.
+  \item Cómo se mide: se mata el contenedor con \texttt{docker kill} y se mide el tiempo hasta que \path{/actuator/health} vuelve a responder UP, con la política de reinicio \path{unless-stopped}. Se comparan las calificaciones guardadas antes y después.
+  \item Origen: análisis CAP/PACELC (calificaciones y actas son PC/EC).
+\end{itemize}
+
+\subsection*{RNF-07. Integridad de calificaciones y actas}
+\begin{itemize}
+  \item Requisito: una calificación confirmada o un acta generada no se puede modificar ni borrar desde la API. Toda corrección crea una versión nueva con el usuario, la fecha y el motivo, y el 100\,\% de esas correcciones queda en el registro de auditoría.
+  \item Característica: Seguridad. Subcaracterística: Integridad.
+  \item Cómo se mide: pruebas automáticas que intentan \texttt{PUT} y \texttt{DELETE} sobre una calificación confirmada, que deben recibir 409 o 403, y que comprueban que cada corrección tiene su registro en la auditoría.
+  \item Origen: RNF-04 del documento de Aplicaciones Web, cuya fuente son las buenas prácticas de seguridad, y su restricción de seguridad de la información, que pide proteger la integridad de la información académica. El acta con firmas viene de RF-08 de ese documento, cuya fuente es la coordinación.
+\end{itemize}
+
+\subsection*{RNF-08. Autenticidad de las peticiones}
+\begin{itemize}
+  \item Requisito: el 100\,\% de los endpoints de negocio rechaza con 401 las peticiones sin JWT, con firma inválida o con el token vencido. El token dura como máximo 60 minutos.
+  \item Característica: Seguridad. Subcaracterística: Autenticidad.
+  \item Cómo se mide: una colección de Postman ejecutada con Newman recorre todos los endpoints del contrato OpenAPI sin token, con un token alterado y con uno vencido, y cuenta cuántos responden algo distinto de 401, que deben ser 0. Los únicos endpoints públicos son el inicio de sesión y \texttt{/actuator/health}.
+  \item Origen: el sistema actual ya usa JWT y se mantiene al distribuir.
+\end{itemize}
+
+\subsection*{RNF-09. Despliegue independiente}
+\begin{itemize}
+  \item Requisito: una versión nueva de ms-propuestas se despliega sin detener los otros servicios. Mientras dura el despliegue, una prueba continua de subida de documentos de 5 minutos termina con 0 errores, y el cambio de versión toma menos de 2 minutos.
+  \item Característica: Mantenibilidad. Subcaracterística: Modularidad.
+  \item Cómo se mide: con la prueba de RNF-02 corriendo a la mitad de la carga se ejecuta \texttt{docker compose up -d -{}-no-deps -{}-build ms-propuestas} y se registran los errores de la prueba y el tiempo hasta que ms-propuestas vuelve a responder.
+  \item Origen: ADR-001 (las reglas de propuestas cambian con el reglamento y con cada periodo).
+\end{itemize}
