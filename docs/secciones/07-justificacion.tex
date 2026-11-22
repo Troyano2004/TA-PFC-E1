@@ -1,0 +1,30 @@
+\section{Justificación de la arquitectura distribuida}\label{sec:justificacion}
+
+Partimos de uteq-export, el sistema de gestión de titulación que ya tenemos construido. Es un monolito: un backend Spring Boot 4.0.2 con Java 17 (551 archivos Java, 64 controladores REST, 99 entidades JPA y 19 migraciones Flyway sobre una sola base PostgreSQL) y un frontend Angular 21. Todo se compila y se despliega junto, y todo corre en el mismo proceso.
+
+Un monolito alcanza para muchos sistemas de este tamaño. Blinowski et al.~\cite{blinowski2022monolithic} compararon las dos arquitecturas con la misma aplicación y encontraron que en una sola máquina el monolito rinde mejor y que escalar en vertical les salió más barato que escalar en horizontal. Por eso no justificamos la distribución por rendimiento ni por la ubicación de los usuarios, que entran por internet a un mismo despliegue. La justificamos por tres requisitos no funcionales que el monolito no puede cumplir, resumidos en la tabla~\ref{tab:justificacion}.
+
+\begin{enumerate}
+  \item La carga se concentra en las fechas límite de propuestas y de entrega del documento, cuando muchos estudiantes suben archivos a la vez, y el resto del periodo el uso es bajo. Hace falta crecer solo en la parte que recibe el pico (RNF-01, RNF-02 y RNF-03).
+  \item Una falla en un módulo secundario no puede dejar sin servicio la recepción de documentos. En el monolito, si la generación de un PDF o un respaldo agota la memoria del proceso, también se cae la entrega de documentos (RNF-04 y RNF-05).
+  \item Las reglas cambian con el Reglamento de la UIC y con cada periodo: plazos, requisitos y rúbricas. Hoy un cambio pequeño en la revisión de propuestas obliga a redesplegar el sistema entero (RNF-09).
+\end{enumerate}
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Requisitos que justifican distribuir el sistema}\label{tab:justificacion}
+\begin{tabularx}{\textwidth}{@{}L{2.9cm}YY@{}}
+\toprule
+Requisito & Por qué el monolito no lo cumple & Cómo lo cumple la arquitectura distribuida \\
+\midrule
+RNF-03 (escalabilidad) & Para atender el pico hay que replicar el sistema completo, incluidos reportes, complexivo y respaldos, que en ese momento no se usan. & Se levantan más instancias de ms-documentos sin tocar el resto. \\
+RNF-05 (tolerancia a fallos) & Un error que agota la memoria detiene todos los módulos, porque comparten proceso. & Cada servicio corre aparte. Si cae ms-evaluacion o ms-notificaciones, la subida de documentos sigue respondiendo. \\
+RNF-09 (modularidad) & Cualquier cambio exige compilar y redesplegar todo. & ms-propuestas se despliega solo, sin detener la recepción de documentos. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Además, la asignatura pide microservicios, API y contenedores en E2 y una base de datos distribuida en E3. Es un requisito del curso y lo dejamos dicho como tal, no como una necesidad de la UTEQ.
+
+Distribuir tiene un costo: latencia de red entre servicios, fallos parciales, datos repartidos en varias bases sin transacciones comunes y más piezas que operar. La sección~\ref{sec:adr} resume cómo lo manejamos, y la sección~\ref{sec:cap} decide qué datos necesitan consistencia fuerte. Para no decidir a ciegas, como recomiendan Auer et al.~\cite{auer2021monolithic}, en E2 medimos el monolito actual con la misma prueba de carga de RNF-01 y RNF-02 y la repetimos sobre los microservicios en E4. Si los números salen peor sin una ganancia en disponibilidad, lo vamos a reportar.
