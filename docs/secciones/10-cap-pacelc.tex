@@ -1,0 +1,39 @@
+\section{Análisis CAP y PACELC}\label{sec:cap}
+
+CAP dice que, si hay una partición de red, un dato replicado no puede ser a la vez consistente y disponible, y hay que elegir uno de los dos (PC o PA). PACELC agrega el caso normal, sin partición, en el que hay que elegir entre latencia baja y consistencia (EL o EC).
+
+La consistencia fuerte cuesta. Ferreira et al.~\cite{ferreira2025benchmarking} midieron Cassandra, MongoDB y Redis en varias regiones de la nube y encontraron que, con consistencia fuerte, Cassandra llegó a procesar hasta 95\,\% menos operaciones por segundo en algunas cargas y Redis fue más de 20 veces más lento. Por eso pedimos consistencia fuerte solo para los datos que habilitan otra acción o que tienen valor legal, y aceptamos consistencia eventual en el resto.
+
+En E1 todavía no hay réplicas. Estas decisiones dicen cómo configurar las bases en E3 (por ejemplo, réplica síncrona o asíncrona) y cómo deben responder los servicios. La tabla~\ref{tab:cap} resume la decisión para cada dato crítico.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{2.6cm}L{3.4cm}L{3.0cm}L{1.5cm}L{4.3cm}@{}}
+\caption{Decisión CAP y PACELC por dato crítico}\label{tab:cap}\\
+\toprule
+Dato (servicio) & Con partición (P) & Sin partición (E) & PACELC & Consecuencia para el usuario \\
+\midrule
+\endfirsthead
+\toprule
+Dato (servicio) & Con partición (P) & Sin partición (E) & PACELC & Consecuencia para el usuario \\
+\midrule
+\endhead
+\endfoot
+\bottomrule
+\endlastfoot
+Estado de la propuesta: enviada, en revisión, aprobada o rechazada (ms-propuestas) & Consistencia. Si no se puede confirmar la escritura en el primario, se rechaza el cambio de estado. & Consistencia. Las lecturas que habilitan otra acción (I10) van al primario o a una réplica síncrona. & PC/EC & Durante una falla de red la comisión puede recibir \enquote{no se pudo registrar la decisión, intente de nuevo}. A cambio, nadie sube un documento sobre una propuesta que no estaba aprobada. \\
+\midrule
+Calificaciones de sustentación (ms-evaluacion) & Consistencia. Una nota solo se acepta si queda escrita en el primario. & Consistencia. El promedio y el acta se calculan solo con notas confirmadas en el primario. & PC/EC & Un miembro del tribunal puede tener que volver a guardar su nota si hay una falla. Nunca hay dos valores distintos de la misma nota. \\
+\midrule
+Actas (ms-evaluacion) & Consistencia para generarla: no se genera mientras falte confirmar una nota o haya partición. & Consistencia al generarla. Ya generada es inmutable (una corrección crea otra versión), así que se puede leer de cualquier réplica sin riesgo. & PC/EC al crearla & El acta puede demorarse si hay una falla, pero la que se descarga siempre corresponde a las notas confirmadas. Ya generada se descarga aunque el primario esté caído. \\
+\midrule
+Estado de revisión del documento: en revisión, corrección requerida, aprobado por el director o listo para tribunal (ms-documentos) & Consistencia, igual que el estado de la propuesta, porque habilita la asignación de tribunal (I11). & Consistencia. & PC/EC & El director puede recibir un error al aprobar durante una falla. No se asigna tribunal sobre un documento sin aprobar. \\
+\midrule
+Archivos y versiones del documento (ms-documentos y Google Drive) & Disponibilidad. Se acepta la subida en el nodo que responda, con la hora del servidor y un id de versión único. Cada subida crea una versión nueva, así que al sincronizar no hay conflictos. & Latencia. La lista de versiones se lee de la réplica más cercana aunque tenga unos segundos de atraso. & PA/EL & El estudiante puede entregar en la fecha límite aunque falle parte del sistema (RNF-02, RNF-04). El director puede ver la versión nueva unos segundos después. Los relojes se sincronizan con NTP porque la hora de recepción cuenta para el plazo. \\
+\midrule
+Notificaciones (ms-notificaciones y RabbitMQ) & Disponibilidad. Los eventos esperan en la cola hasta que el consumidor vuelva. & Latencia. & PA/EL & Un aviso puede llegar tarde, pero guardar una nota o una observación nunca falla por culpa de un aviso. Los repetidos se descartan por id. \\
+\midrule
+Datos de usuario en caché: nombre y correo (copias en ms-propuestas y ms-evaluacion) & Disponibilidad. Se usa la copia en caché si ms-usuarios no responde. & Latencia. La copia vive como máximo 10 minutos. & PA/EL & Si alguien corrige su nombre, otros servicios pueden mostrar el anterior hasta 10 minutos. Los roles y permisos no salen de esta caché, salen del JWT. \\
+\end{longtable}
+\endgroup
