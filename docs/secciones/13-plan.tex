@@ -1,0 +1,103 @@
+\section{Plan del proyecto}\label{sec:plan}
+
+\subsection{Roles y responsabilidades}
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Roles del equipo}\label{tab:roles}
+\begin{tabularx}{\textwidth}{@{}L{4.2cm}L{3.0cm}Y@{}}
+\toprule
+Integrante & Rol & Responsabilidades \\
+\midrule
+\integranteA & \rolA & Decisiones de arquitectura (ADR), diagramas C4, modelo de comunicación, análisis CAP/PACELC y documento \LaTeX. \\
+\integranteB & \rolB & Tablero e issues, código de los servicios, revisión de lo que se sube a \texttt{src/} e instrucciones de ejecución. \\
+\integranteC & \rolC & Requisitos no funcionales, riesgos, pruebas de calidad y verificación de referencias. \\
+\integranteD & \rolD & Evidencias, trabajos relacionados, bitácora, tabla de aportes y video. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Tablero en GitHub Projects}
+
+Las tareas de E1 y E2 están como issues en el tablero del repositorio (\url{https://github.com/Troyano2004/TA-PFC-E1/projects}), con las columnas Todo, In Progress y Done y las etiquetas \texttt{E1} y \texttt{E2}. Los issues se crearon con el script \texttt{docs/plan/crear-issues.sh}, que usa GitHub CLI para crearlos, asignarlos y agregarlos al tablero. Al cerrar un issue pasa solo a Done. Cada integrante tiene cuatro o más issues de E1 que cierra con el commit que los resuelve, en días distintos entre el 21 y el 28 de noviembre de 2026. Los números de la tabla~\ref{tab:issues-e1} son los que asigna GitHub si el repositorio no tenía issues antes de correr el script.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{0.8cm}L{6.8cm}L{1.6cm}L{1.3cm}L{4.4cm}@{}}
+\caption{Issues de E1}\label{tab:issues-e1}\\
+\toprule
+N.º & Título & Asignado & Cierre & Entregable \\
+\midrule
+\endfirsthead
+\toprule
+N.º & Título & Asignado & Cierre & Entregable \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+1 & [E1] Tablero e issues de E1 y E2 & Mendoza & Sáb 21 & Script e issues en el tablero \\
+2 & [E1] Servicio ms-usuarios con datos en memoria & Mendoza & Lun 23 & \texttt{src/ms-usuarios} \\
+3 & [E1] Servicio ms-propuestas que consulta a ms-usuarios por REST & Mendoza & Mar 24 & \texttt{src/ms-propuestas} \\
+4 & [E1] Instrucciones de ejecución y capturas del esqueleto & Mendoza & Jue 26 & README y sección~\ref{sec:esqueleto} \\
+5 & [E1] ADR-001: estilo de arquitectura & Bueno & Sáb 21 & ADR-001 y sección~\ref{sec:justificacion} \\
+6 & [E1] ADR-002: mecanismo de comunicación & Bueno & Lun 23 & ADR-002 y resumen de los ADR \\
+7 & [E1] Diagramas C4 de contexto y de contenedores & Bueno & Mié 25 & Diagramas y sección de arquitectura \\
+8 & [E1] Modelo de comunicación y análisis CAP/PACELC & Bueno & Vie 27 & Secciones de comunicación y CAP \\
+9 & [E1] Documento LaTeX y PDF para el SGA & Bueno & Sáb 28 & \texttt{main.pdf} y \texttt{sga.pdf} \\
+10 & [E1] Requisitos no funcionales con ISO/IEC 25010 & Zambrano & Dom 22 & Sección~\ref{sec:rnf} \\
+11 & [E1] Análisis de riesgos técnicos & Zambrano & Mar 24 & Sección~\ref{sec:riesgos} \\
+12 & [E1] Referencias verificadas & Zambrano & Vie 27 & \texttt{referencias.bib} y apéndice \\
+13 & [E1] Riesgos derivados del incidente de FORM-AC-01 & Zambrano & Mar 24 & R-08 a R-10 \\
+14 & [E1] Evidencias de levantamiento y fotografías & Rivas & Dom 22 & \texttt{evidencias/} \\
+15 & [E1] Trabajos relacionados & Rivas & Mar 24 & Sección~\ref{sec:trabajos} \\
+16 & [E1] Bitácora y plantilla de la tabla de aportes & Rivas & Mié 25 & \texttt{BITACORA.md} y tabla de aportes \\
+17 & [E1] Guion, video y tabla de aportes completa & Rivas & Sáb 28 & Video y sección~\ref{sec:aportes} \\
+\end{longtable}
+\endgroup
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{0.8cm}L{6.0cm}L{1.6cm}L{6.6cm}@{}}
+\caption{Issues de E2, asignados y abiertos}\label{tab:issues-e2}\\
+\toprule
+N.º & Título & Asignado & Descripción \\
+\midrule
+\endfirsthead
+\toprule
+N.º & Título & Asignado & Descripción \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+18 & [E2] Contratos OpenAPI de los servicios & Bueno & Contrato \texttt{/api/v1} de cada servicio antes de programarlo. \\
+19 & [E2] Eventos de RabbitMQ y ms-notificaciones & Bueno & Eventos, colas durables y un consumidor que no repite avisos. \\
+20 & [E2] API Gateway con validación del JWT & Mendoza & Rutas a cada servicio y a uteq-export para lo no migrado. \\
+21 & [E2] Dockerfile por servicio y docker-compose.yml & Mendoza & Todo el sistema arranca con \texttt{docker compose up}. \\
+22 & [E2] ms-documentos: versiones del documento & Mendoza & Subida de versiones, observaciones y validación contra ms-propuestas. \\
+23 & [E2] Prueba de carga base (RNF-01 y RNF-02) & Zambrano & Script de k6 y primera medición sobre el monolito y los servicios. \\
+24 & [E2] Pruebas de tolerancia a fallos (RNF-05) & Zambrano & Detener cada servicio durante una prueba de carga y registrar qué responde el resto. \\
+25 & [E2] Documentación de la API y README de E2 & Rivas & Swagger UI de cada servicio e instrucciones con Docker Compose. \\
+26 & [E2] Bitácora, evidencias y video de E2 & Rivas & Mismo proceso de E1 para la segunda entrega. \\
+\end{longtable}
+\endgroup
+
+\subsection{Cronograma de las entregas}
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Cronograma de las cuatro entregas}\label{tab:cronograma}
+\begin{tabularx}{\textwidth}{@{}L{1.6cm}L{3.2cm}Y@{}}
+\toprule
+Entrega & Fecha & Contenido en SIC-UTEQ \\
+\midrule
+E1 & 29 de noviembre de 2026, 23:55 & Requisitos, arquitectura base, ADR y esqueleto con ms-usuarios y ms-propuestas. \\
+E2 & Semana 9 del encuadre & API Gateway, ms-documentos, ms-evaluacion y ms-notificaciones, RabbitMQ, contratos OpenAPI y Docker Compose. Primera prueba de carga sobre el monolito y los servicios. \\
+E3 & Semana 13 del encuadre & Base de datos por servicio con replicación configurada según el análisis CAP/PACELC, patrón outbox para los eventos y procesamiento de los datos. \\
+E4 & Semana 17 del encuadre & Sistema final en capas, pruebas de carga y de fallos contra los requisitos no funcionales, informe de calidad y defensa. \\
+\bottomrule
+\end{tabularx}
+\end{table}
