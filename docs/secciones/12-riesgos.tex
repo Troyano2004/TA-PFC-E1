@@ -1,0 +1,78 @@
+\section{Análisis de riesgos}\label{sec:riesgos}
+
+La tabla~\ref{tab:escala-riesgos} define la escala. El nivel sale de cruzar probabilidad e impacto: Alto si una es Alta y la otra al menos Media, Bajo si las dos son Bajas, Medio en los demás casos.
+
+\begin{table}[ht]
+\centering
+\small
+\caption{Escala de probabilidad e impacto}\label{tab:escala-riesgos}
+\begin{tabularx}{\textwidth}{@{}L{2.2cm}YY@{}}
+\toprule
+Valor & Probabilidad & Impacto \\
+\midrule
+Baja / Bajo & Puede pasar, pero no esperamos que pase en el periodo. & Molestia para el usuario; se arregla en el día sin pérdida de datos. \\
+Media / Medio & Es razonable que pase al menos una vez en el periodo. & Un grupo de usuarios no puede hacer una tarea durante horas, o hay que corregir datos a mano. \\
+Alta / Alto & Es casi seguro que pase si no se hace nada. & Se pierde una entrega, una calificación o un acta, o el sistema queda fuera en una fecha límite. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{0.9cm}L{4.7cm}L{1.3cm}L{1.3cm}L{1.1cm}L{5.4cm}@{}}
+\caption{Riesgos técnicos}\label{tab:riesgos}\\
+\toprule
+Id & Riesgo & Probab. & Impacto & Nivel & Mitigación \\
+\midrule
+\endfirsthead
+\toprule
+Id & Riesgo & Probab. & Impacto & Nivel & Mitigación \\
+\midrule
+\endhead
+\endfoot
+\bottomrule
+\endlastfoot
+R-01 & Fallo en cascada por llamadas síncronas: si un servicio se cae o se pone lento en una fecha límite, los que lo llaman por REST se quedan esperando, agotan sus hilos y también dejan de responder. & Media & Alto & Alto & Tiempo límite en toda llamada entre servicios (ya está en el esqueleto: 2000~ms y respuesta 503). En E2, cortocircuito con Resilience4j y caché de datos de usuario. En E4, prueba apagando un servicio a la vez durante una prueba de carga (RNF-05). \\
+\midrule
+R-02 & Datos inconsistentes entre servicios: sin transacciones entre bases distintas, podría aceptarse un documento para una propuesta que se estaba rechazando, o asignarse tribunal a un documento sin aprobar. & Media & Alto & Alto & Los estados que habilitan otra acción se consultan al primario de forma síncrona (I10 e I11, PC/EC). Las transiciones se validan en el servicio dueño del dato. Pruebas de integración del flujo propuesta, documento y tribunal en E2. Patrón outbox para los eventos en E3 (RNF-07). \\
+\midrule
+R-03 & Pico de subidas en la semana de entrega: muchas subidas de PDF a la vez saturan ms-documentos o la cuota de la API de Google Drive, y los estudiantes no pueden entregar. & Alta & Alto & Alto & Límite de 10~MB por archivo. Prueba de carga de RNF-02 desde E2. Escalado de ms-documentos (RNF-03). Si Drive rechaza por cuota, el archivo se guarda en un almacenamiento temporal del servicio y se reintenta el envío en segundo plano, con la hora de recepción ya registrada (RNF-04). \\
+\midrule
+R-04 & Avisos perdidos o repetidos: RabbitMQ entrega cada mensaje al menos una vez, así que un estudiante puede recibir dos veces el mismo aviso, o no recibirlo si el broker se reinicia sin colas durables. & Media & Medio & Medio & Colas durables y mensajes persistentes. Confirmación del publicador. ms-notificaciones guarda el id de cada evento procesado y descarta los repetidos. Ningún dato crítico depende de un aviso (RNF-05). \\
+\midrule
+R-05 & Credenciales expuestas: el repositorio es público y, al pasar a contenedores, es fácil subir por error claves de Google Drive, del correo SMTP o la clave de firma del JWT. & Media & Alto & Alto & Las claves van en variables de entorno y en un archivo \texttt{.env} incluido en \texttt{.gitignore}; al repositorio solo sube \texttt{.env.example} sin valores. Revisión de cada push con gitleaks. Si una clave se filtra, se revoca y se cambia el mismo día (RNF-08). \\
+\midrule
+R-06 & Cambios de contrato que rompen a otro servicio: si ms-usuarios cambia el nombre o el tipo de un campo, ms-propuestas falla aunque cada servicio pase sus propias pruebas. & Media & Medio & Medio & Contratos OpenAPI versionados (\texttt{/api/v1}). Solo cambios compatibles hacia atrás dentro de una versión. Los DTO del cliente ignoran campos desconocidos, como ya hace \texttt{UsuarioDto} en el esqueleto. Pruebas de contrato en E2 (RNF-09). \\
+\midrule
+R-07 & Dependencia de servicios externos: Google Drive, los servicios de IA o el correo pueden caerse, cambiar su API o cortar el acceso por cuota, y ninguno lo controlamos nosotros. & Media & Medio & Medio & Tiempo límite en cada llamada externa. La revisión con IA y la detección de texto generado corren fuera de la petición del estudiante (I20). Los correos salen de una cola con reintentos (I17). Cada fallo externo queda en los logs (RNF-05). \\
+\end{longtable}
+\endgroup
+
+\subsection*{Riesgos derivados del incidente analizado en FORM-AC-01}
+
+En FORM-AC-01 el equipo analizó la caída de Facebook, Instagram y WhatsApp del 4 de octubre de 2021 (\url{https://github.com/DALBEZ-ROG/AD-FORM-AC-01-BBM}). Según el informe de Meta~\cite{janardhan2021outage}, durante un mantenimiento de rutina un comando que debía medir la capacidad de la red troncal desconectó todos los centros de datos; la herramienta de auditoría que debía frenarlo tenía un error y lo dejó pasar. Sin red, los servidores DNS retiraron sus anuncios BGP y los servicios desaparecieron de Internet. El acceso remoto de los ingenieros también cayó, y tuvieron que ir en persona a los centros de datos. De ese análisis el equipo sacó tres riesgos para el sistema de titulación: una migración de base de datos aplicada sin probar, la dependencia de un solo backend, una sola base y un solo disco, y un acceso de administración que pasa por el mismo inicio de sesión con JWT. La tabla~\ref{tab:riesgos-formac} los adapta a los microservicios del ADR-001, con la misma escala de la tabla~\ref{tab:escala-riesgos}.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{0.9cm}L{4.7cm}L{1.3cm}L{1.3cm}L{1.1cm}L{5.4cm}@{}}
+\caption{Riesgos derivados de FORM-AC-01}\label{tab:riesgos-formac}\\
+\toprule
+Id & Riesgo & Probab. & Impacto & Nivel & Mitigación \\
+\midrule
+\endfirsthead
+\toprule
+Id & Riesgo & Probab. & Impacto & Nivel & Mitigación \\
+\midrule
+\endhead
+\endfoot
+\bottomrule
+\endlastfoot
+R-08 & Migración de base de datos aplicada sin probar. En Meta un cambio de rutina pasó el control que debía frenarlo y tumbó todo. En SIC-UTEQ cada servicio tiene su base con migraciones Flyway desde E3: una migración mal escrita puede dejar sin arrancar a su servicio o, en ms-evaluacion, dañar calificaciones ya confirmadas. & Media & Alto & Alto & Cada migración se prueba primero en una copia de la base de su servicio levantada con Docker Compose, con datos de prueba. Antes de aplicarla, respaldo con \texttt{pg\_dump} y script de reversión listo. Se aplica en un solo servicio a la vez, así el daño queda dentro de ese servicio (ADR-001). La revisión que bloquea migraciones sin probar también se prueba, porque en Meta falló justamente la herramienta de control (RNF-06, RNF-09). \\
+\midrule
+R-09 & Dependencia de un componente común. En Meta todo dependía del \emph{backbone}; en el sistema actual todo depende de un backend, una base y el disco del servidor. Separar en servicios no quita los puntos comunes: el API Gateway recibe todas las peticiones, RabbitMQ lleva todos los avisos y, si las cinco bases de E3 quedan en el mismo servidor y disco, un fallo de ese disco las tumba a la vez. & Media & Alto & Alto & Dos instancias del gateway detrás de un balanceador y política de reinicio automático en cada contenedor. Health check con Spring Boot Actuator en el gateway, en cada servicio y en el broker, con el monitor de RNF-04 avisando de la caída. Bases en volúmenes separados, respaldo diario de las bases y de los archivos subidos, y réplica de las bases PC/EC en E3 (RNF-04, RNF-05, RNF-06). \\
+\midrule
+R-10 & Acceso de administración por el mismo inicio de sesión con JWT. En Meta, al caer la red, tampoco funcionó el acceso de los ingenieros. En SIC-UTEQ ms-usuarios emite el JWT y el gateway lo valida: si ms-usuarios cae o se cambia por error la clave de firma, ni el administrador puede entrar para corregir. & Baja & Alto & Medio & Procedimiento de acceso de emergencia documentado fuera del sistema y probado una vez por entrega: acceso al servidor y \texttt{docker exec} a cada contenedor y a cada base. El gateway valida el JWT con la clave pública, así que una caída de ms-usuarios no invalida los tokens ya emitidos. Copia de las claves guardada fuera del repositorio y conocida por dos integrantes (RNF-08; relacionado con R-05). \\
+\end{longtable}
+\endgroup
