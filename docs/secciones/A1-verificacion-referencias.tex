@@ -1,0 +1,58 @@
+\section{Verificación de las referencias}\label{sec:verificacion}
+
+Una referencia con DOI entró en la bibliografía solo si su DOI existe y si título, autores, revista o congreso, año, volumen y páginas coinciden con lo que registra Crossref. Si un dato no se pudo comprobar, la referencia no entró. La única referencia sin DOI es el informe de Meta sobre la caída del 4 de octubre de 2021~\cite{janardhan2021outage}: se comprobaron en su página el título, el autor, la fecha de publicación (5 de octubre de 2021) y el sitio (Engineering at Meta) el 22 de noviembre de 2026. Es la fuente principal del análisis de FORM-AC-01 y no cuenta entre los artículos de revista.
+
+Cada DOI se consultó en \url{https://api.crossref.org/works/} seguido del DOI, que devuelve los metadatos que el editor registró. La comprobación se puede repetir abriendo esa dirección o resolviendo el DOI en \url{https://doi.org/}. Fecha de la consulta: 21 de noviembre de 2026.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{0.8cm}L{4.2cm}L{4.8cm}L{5.3cm}@{}}
+\caption{Referencias incluidas y datos comprobados}\label{tab:verificadas}\\
+\toprule
+Ref. & DOI & Datos comprobados en Crossref & Observaciones \\
+\midrule
+\endfirsthead
+\toprule
+Ref. & DOI & Datos comprobados en Crossref & Observaciones \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\cite{blinowski2022monolithic} & \url{https://doi.org/10.1109/ACCESS.2022.3152803} & Título, 3 autores, IEEE Access, 2022, vol.~10, págs.~20357--20374 & Crossref escribe el apellido \enquote{Przybylek} sin ł; se dejó igual. \\
+\cite{auer2021monolithic} & \url{https://doi.org/10.1016/j.infsof.2021.106600} & Título, 4 autores, Information and Software Technology, 2021, vol.~137, art.~106600 & Elsevier usa número de artículo en lugar de páginas. \\
+\cite{abgaz2023decomposition} & \url{https://doi.org/10.1109/TSE.2023.3287297} & Título, 10 autores, IEEE Transactions on Software Engineering, 2023, vol.~49, n.º~8, págs.~4213--4242 & \\
+\cite{velepucha2023survey} & \url{https://doi.org/10.1109/ACCESS.2023.3305687} & Título, 2 autores, IEEE Access, 2023, vol.~11, págs.~88339--88358 & \\
+\cite{soylemez2022challenges} & \url{https://doi.org/10.3390/app12115507} & Título, 3 autores, Applied Sciences, 2022, vol.~12, n.º~11, art.~5507 & MDPI usa número de artículo. \\
+\cite{ferreira2025benchmarking} & \url{https://doi.org/10.1109/ACCESS.2025.3558923} & Título, 5 autores, IEEE Access, 2025, vol.~13, págs.~63428--63438 & \\
+\cite{kaminski2025rabbitmq} & \url{https://doi.org/10.35784/jcsi.7977} & Título, 3 autores, Journal of Computer Sciences Institute, 2025, vol.~37, págs.~457--462 & La revista no usa número de ejemplar. \\
+\cite{grzelak2026gradassign} & \url{https://doi.org/10.5220/0014904600004021} & Título, 2 autores, Proceedings of the 18th International Conference on Computer Supported Education, 2026, págs.~1653--1660 & También se revisó la página del DOI en SciTePress. \\
+\cite{abdulsalaam2024framework} & \url{https://doi.org/10.54536/ajet.v3i4.3678} & Título, 1 autora, American Journal of Education and Technology, 2024, vol.~3, n.º~4, págs.~60--71 & \\
+\cite{ridwan2024thesis} & \url{https://doi.org/10.37676/jmcs.v3i2.6092} & Título, 3 autores, Jurnal Media Computer Science, 2024, vol.~3, n.º~2, págs.~113--124 & Crossref registra \enquote{Ridwan, Ridwan} y \enquote{Khairil, Khairil}, como es común con nombres de una sola palabra en Indonesia. \\
+\end{longtable}
+\endgroup
+
+Las once referencias son de 2021 en adelante: diez con DOI y el informe de Meta. Seis son artículos de revistas indexadas con DOI: IEEE Access, IEEE Transactions on Software Engineering, Information and Software Technology y Applied Sciences. La indexación de cada revista se puede confirmar en el buscador de fuentes de Scopus (\url{https://www.scopus.com/sources}) o en SJR (\url{https://www.scimagojr.com}). Los DOI no distinguen mayúsculas de minúsculas: Crossref los devuelve en minúsculas y IEEE los imprime en mayúsculas.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{4.4cm}L{4.4cm}L{6.4cm}@{}}
+\caption{Referencias revisadas y descartadas}\label{tab:descartadas}\\
+\toprule
+DOI & Trabajo & Motivo \\
+\midrule
+\endfirsthead
+\toprule
+DOI & Trabajo & Motivo \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+\url{https://doi.org/10.1016/j.infsof.2020.106449} & Li et al., atributos de calidad en microservicios & Crossref lo fecha en 2021 (vol.~131), pero OpenAlex lo da como 2020 y el propio DOI dice 2020. \\
+\url{https://doi.org/10.5812/jme.110696} & Shakerian et al., LMS para el proceso de tesis de maestría & La página de la revista da 2020 en la forma de citar y 2021 como fecha de publicación en línea. \\
+\url{https://doi.org/10.24425/ijet.2024.149562} & Niswar et al., rendimiento de REST, GraphQL y gRPC & Crossref no registra el volumen y la página de la revista no cargó. \\
+\url{https://doi.org/10.4108/eai.13-10-2023.2341311} & Su, Zhao y Fu, gestión de proyectos de grado & Crossref no tiene resumen ni páginas y la página del editor devolvió error 403. \\
+\url{https://doi.org/10.33395/sinkron.v7i4.12244} & Sistema web de gestión de tesis (revista Sinkron) & El DOI dice volumen 7 y Crossref registra volumen 6. \\
+\end{longtable}
+\endgroup
