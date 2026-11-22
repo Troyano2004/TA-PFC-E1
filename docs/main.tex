@@ -1,18 +1,42 @@
 \documentclass[12pt,a4paper]{article}
-\usepackage[spanish,es-noquoting]{babel}
+\usepackage[spanish,es-noquoting,es-tabla,es-nolists]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage[margin=2.5cm]{geometry}
 \usepackage{graphicx}
 \usepackage{booktabs}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{pdflscape}
+\usepackage{xcolor}
 \usepackage{xurl}
 \usepackage[hidelinks]{hyperref}
 \usepackage{csquotes}
 \usepackage[backend=biber,style=ieee]{biblatex}
 \addbibresource{referencias.bib}
+\DefineBibliographyStrings{spanish}{artno = {art.~n.º}}
+\setcounter{biburlnumpenalty}{100}
+\setcounter{biburlucpenalty}{200}
+\setcounter{biburllcpenalty}{200}
+\setlength{\emergencystretch}{2em}
 
 \input{datos}
+
+% Columnas de tabla con texto alineado a la izquierda
+\newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+
+% Marca en rojo lo que falta antes de entregar; también queda en el log como "PENDIENTE:"
+\newcommand{\pendiente}[1]{\textcolor{red}{\textbf{[PENDIENTE: #1]}}\typeout{PENDIENTE: #1}}
+
+% Enlaces a commits e issues del repositorio (tabla de aportes)
+\newcommand{\commit}[1]{\href{\repo/commit/#1}{\texttt{#1}}}
+\newcommand{\issue}[1]{\href{\repo/issues/#1}{\##1}}
+
+% Cada sección vive en su propio archivo y aparece cuando su responsable la sube
+\newcommand{\seccion}[1]{\IfFileExists{secciones/#1.tex}{\input{secciones/#1}}{\typeout{Seccion todavia no subida: #1}}}
 
 \begin{document}
 \input{secciones/00-portada}
@@ -20,10 +44,25 @@
 \tableofcontents
 \newpage
 
-% Las secciones se irán agregando aquí:
-% \input{secciones/01-resumen}
-% \input{secciones/02-contexto}
-% ...
+\seccion{01-resumen}
+\seccion{02-contexto}
+\seccion{03-objetivos}
+\seccion{04-trabajos-relacionados}
+\seccion{05-requisitos-funcionales}
+\seccion{06-requisitos-no-funcionales}
+\seccion{07-justificacion}
+\seccion{08-arquitectura-c4}
+\seccion{09-comunicacion}
+\seccion{10-cap-pacelc}
+\seccion{11-adr}
+\seccion{12-riesgos}
+\seccion{13-plan}
+\seccion{14-esqueleto}
+\seccion{15-aportes}
+\seccion{16-declaracion-ia}
 
 \printbibliography[heading=bibintoc,title={Referencias}]
+
+\appendix
+\seccion{A1-verificacion-referencias}
 \end{document}
