@@ -6,9 +6,16 @@ Proyecto Fin de Curso de Aplicaciones Distribuidas (UTEQ, 7.º B). Entrega 1: de
 
 | Integrante | Rol |
 |---|---|
-| Bueno Troya Erwin Daniel | Arquitecto y Líder de Desarrollo |
-| Castro Coello Mario Sebastián | Responsable de Calidad |
-| Macías Vásquez César Abrahán | Responsable de Documentación |
+| Bueno Troya Erwin Daniel | Arquitecto |
+| Mendoza Villarroel Elian Jossue | Líder de Desarrollo |
+| Zambrano Triviño Leonel Leonidas | Responsable de Calidad |
+| Rivas Piloso Dayver Yahir | Responsable de Documentación |
+
+## Levantamiento de información
+
+Entrevista con la Ing. Jessica Ponce, Coordinadora de la Carrera de Ingeniería de Software de la UTEQ, el jueves 19 de noviembre de 2026, grabada en video. Además se hizo una consulta complementaria a docentes de la carrera familiarizados con el proceso de titulación. Las fotografías están en `evidencias/levantamiento/` y la relación entre requisitos y fuentes en `docs/entrevista-hallazgos.md`.
+
+Enlace al video de la entrevista: \pendiente{enlace}
 
 ## Estructura
 
