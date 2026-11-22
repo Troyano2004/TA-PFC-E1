@@ -1,0 +1,87 @@
+\section{Contexto y problema}\label{sec:contexto}
+
+Esta sección sale de dos fuentes escritas y del levantamiento de esta entrega. La primera fuente es el documento de requisitos \enquote{Gestión de documentación para la titulación} (enero de 2026), que tres integrantes de este equipo (Bueno, Mendoza y Rivas) elaboraron en la asignatura de Aplicaciones Web y del que salió uteq-export; entre paréntesis se indica la sección de ese documento de donde viene cada dato. La segunda es el Reglamento de la Unidad de Integración Curricular de la UTEQ, aprobado por el Consejo Universitario el 27 de septiembre de 2024, que se cita por artículo. El levantamiento se describe al final de la sección.
+
+\subsection{Organización}
+
+El sistema se construye para el proceso de titulación de la Carrera de Ingeniería de Software de la Facultad de Ciencias de la Computación y Diseño Digital de la Universidad Técnica Estatal de Quevedo (UTEQ). El proceso empieza cuando el estudiante se matricula en la asignatura Desarrollo de Titulación I y termina con la defensa del trabajo y la entrega de los documentos habilitantes para obtener el título (\enquote{Introducción}). Lo regula el Reglamento de la Unidad de Integración Curricular, que la coordinación de carrera entregó al equipo por correo institucional (\enquote{Reglamentos institucionales relevantes}). En el proyecto de Aplicaciones Web, la Coordinadora de la carrera actuó como Product Owner: aportó la visión institucional y priorizó los requisitos (\enquote{Roles definidos en el equipo}).
+
+\subsection{Cómo se hace hoy el trámite}
+
+El proceso tiene tres módulos (\enquote{Casos de uso principales}):
+
+\begin{enumerate}
+  \item Propuesta y anteproyecto: el estudiante presenta su propuesta de anteproyecto, la comisión formativa la aprueba o la rechaza con observaciones, el estudiante registra el anteproyecto final y el docente de Titulación I lo califica. Con el director asignado empiezan las tutorías, cada una con su acta. Según el reglamento, el Consejo Directivo de Facultad emite la resolución de aprobación y designa al director y al tribunal (Art.~49, literal b).
+  \item Proyecto final: el estudiante entrega el proyecto, el tribunal registra observaciones y calificaciones con una rúbrica y se registran las notas parciales y la nota final.
+  \item Cierre: se genera y se valida el acta de calificación, el estudiante carga los documentos habilitantes, la coordinación de carrera los valida y asesoría legal legaliza la documentación.
+\end{enumerate}
+
+Según el documento, gran parte de estas gestiones se hacen de forma manual o por correo institucional (\enquote{Introducción}). En Aplicaciones Web el equipo construyó uteq-export, una aplicación Angular y Spring Boot con un solo despliegue y una sola base de datos. Es un prototipo: no está en uso en la carrera y solo se probó con docentes y estudiantes en la evaluación de usabilidad. Es el punto de partida de este proyecto.
+
+\subsection{Consecuencias de no resolverlo}
+
+El documento describe tres consecuencias del trámite manual: riesgo de perder información, retrasos en la revisión de documentos y errores en el control del proceso. Afectan a estudiantes, docentes y personal administrativo, y provocan demoras y dificultades para cumplir los plazos (\enquote{Introducción}).
+
+Esos plazos los fija el reglamento, y son los que muestran por qué un retraso o un documento perdido tiene costo:
+
+\begin{itemize}
+  \item La propuesta se presenta en PDF a la Comisión de Investigación Formativa entre las semanas 1 y 4 del penúltimo nivel (Art.~49, literal a).
+  \item La comisión tiene 5 días hábiles para trasladarla al Consejo Directivo, que tiene 10 días hábiles para analizarla; la designación de director y tribunal se hace en los primeros 15 días hábiles del último nivel (Art.~49, literal b).
+  \item El director se reúne con el estudiante al menos dos veces al mes (Art.~54) y hace como mínimo cinco asesorías por corte evaluativo, cuyos informes y actas envía en la última semana de cada corte (Art.~57, numeral 1).
+  \item El documento debe tener menos de 10\,\% de coincidencia en COMPILATIO antes de la predefensa (Art.~57, numeral 2).
+\end{itemize}
+
+Cuando el trámite se lleva por correo y en papel, cada uno de esos plazos se controla a mano. Una propuesta que se queda en una bandeja de entrada puede pasar los 5 días hábiles de traslado sin que nadie lo note, una designación tardía retrasa el inicio de las tutorías de todo el último nivel, y un acta de tutoría extraviada deja al director sin respaldo para las cinco asesorías que debe reportar en cada corte. Las tres consecuencias que describe el documento de Aplicaciones Web se traducen así en incumplimientos de plazos que el reglamento sí fija.
+
+Hay mediciones de la versión monolítica, uteq-export, hechas en Aplicaciones Web:
+
+\begin{itemize}
+  \item Usabilidad con la escala SUS (\enquote{Evaluación de Usabilidad mediante la Escala SUS}): según las figuras de esa evaluación participaron 4 docentes y 4 estudiantes. Los docentes obtuvieron un promedio de 72,5 (desviación estándar 3,06) y los estudiantes un promedio de 41,88 (desviación estándar 9,90). El valor de referencia de la escala es 68, así que los estudiantes perciben el sistema como difícil de usar.
+  \item Tiempos de respuesta en un solo equipo (Intel Core i5, 8~GB de RAM, Windows 10), en red local y sin carga concurrente (\enquote{Pruebas de rendimiento}): inicio de sesión 1,2~s, carga de un PDF 2,4~s, visualización de documentos 1,6~s y registro de observaciones 1,3~s.
+\end{itemize}
+
+Esas pruebas no midieron el sistema con usuarios simultáneos, que es justamente el escenario de las fechas límite. Por eso RNF-01 y RNF-02 de este documento fijan metas con 150 usuarios y con subidas concurrentes.
+
+\subsection{Interesados}
+
+La tabla~\ref{tab:interesados} resume a los interesados y lo que espera cada uno, tomado de los actores del documento (\enquote{Diagrama de dependencia estratégica}) y de sus historias de usuario y requisitos.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{2.4cm}L{3.7cm}L{5.3cm}L{3.6cm}@{}}
+\caption{Interesados y lo que espera cada uno}\label{tab:interesados}\\
+\toprule
+Interesado & Qué hace en el proceso & Qué espera del sistema & De dónde sale \\
+\midrule
+\endfirsthead
+\toprule
+Interesado & Qué hace en el proceso & Qué espera del sistema & De dónde sale \\
+\midrule
+\endhead
+\endfoot
+\bottomrule
+\endlastfoot
+Estudiante & Inicia el proceso: registra la propuesta, los documentos y los entregables. & Subir la propuesta sin trámites presenciales, recibir un comprobante de cada entrega y enterarse a tiempo de los cambios de estado. & HU-01, HU-03 y HU-05; actores del diagrama de dependencia estratégica \\
+\midrule
+Comisión formativa & Revisa y aprueba o rechaza las propuestas de anteproyecto. & Registrar cada decisión con observaciones y que quede guardado quién decidió y cuándo. & HU-02, RF-02 y RF-11 \\
+\midrule
+Consejo Directivo de Facultad & Emite la resolución de aprobación de la propuesta y designa al director y al tribunal. & Recibir la propuesta con una sugerencia de director y tribunal, y que la designación quede registrada con su número de resolución. & Reglamento, Art.~49, literal b; HU-09 \\
+\midrule
+Director de proyecto & Supervisa el trabajo y genera actas de tutoría y de evaluación. & Planificar las reuniones y llevar un historial formal de tutorías con actas firmadas. & HU-04, RF-05, RF-12 y CU04 \\
+\midrule
+Docente de Titulación I & Califica el anteproyecto final. & Recibir el anteproyecto final completo y registrar su calificación con observaciones y fecha. & RF-04 y CU03 \\
+\midrule
+Tribunal & Evalúa el proyecto final y registra observaciones y calificaciones. & Evaluar con una rúbrica que no permita cerrar la evaluación si falta un criterio. & HU-06 y RF-06 \\
+\midrule
+Coordinación de carrera & Valida, supervisa y controla el cumplimiento del proceso; fue la Product Owner del proyecto de Aplicaciones Web. & Validar los documentos habilitantes, controlar las fechas según el cronograma académico, actas de tutoría con lugar, fecha y hora, participantes, objetivos, acuerdos y firmas, y poder restaurar información con copias de seguridad diarias. & HU-08, RB-03, RNF-06 de AppWeb y \enquote{Validación de Requisitos} \\
+\midrule
+Asesoría legal & Legaliza la documentación final cuando se cumplieron todas las etapas. & Registrar la legalización solo cuando el acta está validada, con fecha y hora. & RF-09 y CU13 \\
+\end{longtable}
+\endgroup
+
+La observación sobre las actas de tutoría salió de la reunión en que el equipo validó los requisitos con la Coordinadora de la carrera (\enquote{Validación de Requisitos}). El documento de Aplicaciones Web registra además una entrevista con la coordinación de carrera, como fotografía en \enquote{Evidencia de la entrevista}, pero no transcribe lo que se dijo.
+
+\subsection{Levantamiento de esta entrega}
+
+El jueves 19 de noviembre de 2026 el equipo entrevistó a la Ing. Jessica Ponce, Coordinadora de la Carrera de Ingeniería de Software de la UTEQ. La entrevista se grabó en video y el enlace a la grabación está en el \texttt{README.md} del repositorio. Como consulta complementaria, el equipo conversó también con docentes de la carrera familiarizados con el proceso de titulación; de esa consulta queda como respaldo una fotografía. Las fotografías de las dos actividades están en \path{evidencias/levantamiento/}. La relación entre cada requisito y su fuente escrita está en \path{docs/entrevista-hallazgos.md}.
