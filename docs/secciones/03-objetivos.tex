@@ -1,0 +1,39 @@
+\section{Objetivos}\label{sec:objetivos}
+
+\subsection{Objetivo general}
+
+Construir SIC-UTEQ, la versión distribuida del sistema de gestión de titulación de la carrera, que cubra el flujo desde la propuesta de anteproyecto hasta el acta de calificación con servicios independientes, y demostrar al cierre del periodo (E4), con mediciones, que cumple los requisitos no funcionales RNF-01 a RNF-09.
+
+\subsection{Objetivos específicos}
+
+Cada objetivo tiene un indicador con su meta y la entrega en que se comprueba. Los indicadores de rendimiento, disponibilidad y seguridad son los mismos de la sección~\ref{sec:rnf}, para que el cumplimiento de un objetivo se lea directamente en las pruebas de esos requisitos.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{0.9cm}L{4.5cm}L{5.0cm}L{4.6cm}@{}}
+\caption{Objetivos específicos e indicadores}\label{tab:objetivos}\\
+\toprule
+Id & Objetivo & Indicador y meta & Cómo y cuándo se mide \\
+\midrule
+\endfirsthead
+\toprule
+Id & Objetivo & Indicador y meta & Cómo y cuándo se mide \\
+\midrule
+\endhead
+\endfoot
+\bottomrule
+\endlastfoot
+OE-1 & Separar el flujo de titulación de uteq-export en cinco servicios (usuarios, propuestas, documentos, evaluación y notificaciones), cada uno con su propia base de datos y detrás de un API Gateway. & Servicios desplegados con base propia y accesibles solo por el gateway: 5 de 5. Accesos de un servicio a la base de otro: 0. & Todo el sistema arranca con \texttt{docker compose up} y se revisa la configuración de conexión de cada servicio. Servicios en E2 y bases de datos en E3. \\
+\midrule
+OE-2 & Implementar sobre esos servicios las 13 historias de usuario de la sección~\ref{sec:rf}. & Historias cuyos criterios de aceptación pasan en pruebas automatizadas: 100\,\% al cierre de E4, y en cada entrega las historias planificadas para ella. & Una prueba automatizada por criterio de aceptación, ejecutada en cada entrega según la columna \enquote{Entrega} de la tabla~\ref{tab:hu}. \\
+\midrule
+OE-3 & Atender los picos de las fechas límite escalando solo la recepción de documentos. & p95 de las consultas con 150 usuarios menor a 500~ms (RNF-01); 60 subidas de 10~MB por minuto durante 15 minutos sin errores (RNF-02); al menos 60\,\% más subidas por minuto con dos instancias de ms-documentos (RNF-03). & Pruebas de carga con k6. Línea base del monolito uteq-export en E2 y medición final de SIC-UTEQ en E4. \\
+\midrule
+OE-4 & Mantener la recepción de documentos disponible aunque falle otra parte del sistema. & Disponibilidad de al menos 99,5\,\% en las 72 horas previas a una fecha límite (RNF-04); 0 fallas en cascada al detener cualquier otro servicio (RNF-05); recuperación en menos de 60~s sin perder calificaciones ni actas (RNF-06). & Monitor que consulta el servicio cada 60~s; \texttt{docker stop} y \texttt{docker kill} durante una prueba de carga. Parcial en E1 (503 del esqueleto), completo en E3 y E4. \\
+\midrule
+OE-5 & Proteger la integridad de calificaciones y actas y el acceso a la API. & Correcciones de notas o actas sin registro de auditoría: 0 (RNF-07). Endpoints de negocio que aceptan una petición sin JWT válido: 0 (RNF-08). & Pruebas automatizadas sobre calificaciones confirmadas y colección de Newman sobre el contrato OpenAPI. JWT en E2, auditoría en E3, verificación final en E4. \\
+\end{longtable}
+\endgroup
+
+Quedan fuera de estos objetivos dos temas que el sistema anterior dejó abiertos. El primero es la usabilidad para los estudiantes: en la evaluación SUS de uteq-export obtuvieron 41,88, por debajo del valor de referencia de 68 (sección~\ref{sec:contexto}). Mejorarla depende sobre todo del rediseño de la interfaz, que no es el foco de esta asignatura. El segundo es la integración directa con el SGA, que el documento de Aplicaciones Web dejó como trabajo futuro; mientras tanto, los datos del SGA se siguen importando desde archivos Excel.
