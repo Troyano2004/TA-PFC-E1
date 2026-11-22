@@ -1,0 +1,154 @@
+\section{Requisitos funcionales}\label{sec:rf}
+
+Los requisitos funcionales salen del documento de Aplicaciones Web \enquote{Gestión de documentación para la titulación}, que define doce requisitos (RF-01 a RF-12) y ocho historias de usuario (HU-01 a HU-08), todos validados con la coordinación de carrera (\enquote{Requisitos Funcionales} y \enquote{Validación de Requisitos}). Aquí se reutilizan las ocho historias y se agregan cinco nuevas (HU-09 a HU-13) para los requisitos que no tenían historia: RF-03, RF-04, RF-09, RF-11 y RF-12. Las nuevas se redactaron a partir del texto de cada requisito, de la tabla de trazabilidad y de los casos de uso asociados del mismo documento, y del Reglamento de la UIC cuando fija plazos o condiciones.
+
+La tabla~\ref{tab:hu} resume las trece historias, el servicio de SIC-UTEQ que las atiende y la entrega en que se planifica implementarlas.
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{1.0cm}L{4.8cm}L{1.7cm}L{3.0cm}L{1.2cm}L{3.0cm}@{}}
+\caption{Historias de usuario de SIC-UTEQ}\label{tab:hu}\\
+\toprule
+Id & Historia & Requisito & Servicio & Entrega & Origen \\
+\midrule
+\endfirsthead
+\toprule
+Id & Historia & Requisito & Servicio & Entrega & Origen \\
+\midrule
+\endhead
+\bottomrule
+\endfoot
+HU-01 & Subir propuesta de anteproyecto & RF-01 & ms-propuestas & E2 & HU-01 de AppWeb \\
+HU-02 & Validar propuesta & RF-02 & ms-propuestas & E2 & HU-02 de AppWeb \\
+HU-03 & Notificaciones automáticas & RF-10 & ms-notificaciones & E2 & HU-03 de AppWeb \\
+HU-04 & Registrar tutorías y actas & RF-05 & ms-documentos & E3 & HU-04 de AppWeb \\
+HU-05 & Subir proyecto final & RF-05, RF-07 & ms-documentos & E2 & HU-05 de AppWeb \\
+HU-06 & Registrar observaciones del tribunal & RF-06 & ms-evaluacion & E4 & HU-06 de AppWeb \\
+HU-07 & Generar acta de calificación & RF-08 & ms-evaluacion & E4 & HU-07 de AppWeb \\
+HU-08 & Validar documentos habilitantes & RF-09 & ms-documentos & E4 & HU-08 de AppWeb \\
+HU-09 & Asignar director y tribunal & RF-03 & ms-propuestas y ms-evaluacion & E3 & Nueva: RF-03, trazabilidad y reglamento \\
+HU-10 & Registrar y calificar el anteproyecto final & RF-04 & ms-documentos & E3 & Nueva: RF-04 y CU03 \\
+HU-11 & Legalizar documentos con autenticidad verificada & RF-09 & ms-evaluacion & E4 & Nueva: RF-09, CU10 y CU13 \\
+HU-12 & Aprobar el tema antes de la propuesta & RF-11 & ms-propuestas & E2 & Nueva: RF-11, CU01 y CU02 \\
+HU-13 & Planificar reuniones de tutoría & RF-12 & ms-documentos & E3 & Nueva: RF-12, CU04 y reglamento \\
+\end{longtable}
+\endgroup
+
+\subsection{Historias reutilizadas del documento de Aplicaciones Web}
+
+Las historias HU-01 a HU-08 se copian de la sección \enquote{Historias de Usuario} de ese documento, con el mismo texto y los mismos criterios de aceptación.
+
+\subsubsection*{HU-01. Subir propuesta de anteproyecto}
+Como estudiante, quiero subir mi propuesta en formato PDF para que la comisión formativa la revise sin necesidad de trámites presenciales.
+\begin{itemize}
+  \item Dado que inicié sesión, cuando cargo un archivo PDF de hasta 10~MB, entonces el sistema lo guarda correctamente y muestra un mensaje de confirmación.
+  \item Dado que cargo un archivo que no es PDF o supera los 10~MB, cuando intento enviarlo, entonces el sistema bloquea la acción y muestra el motivo del rechazo.
+\end{itemize}
+Requisito: RF-01. Fuente: \enquote{Historias de Usuario}, HU-01.
+
+\subsubsection*{HU-02. Validar propuesta}
+Como miembro de la comisión formativa, quiero aprobar o rechazar propuestas y dejar observaciones para registrar decisiones de manera trazable.
+\begin{itemize}
+  \item Dado que abro una propuesta, cuando registro el estado \enquote{Aprobada} o \enquote{Rechazada} junto con observaciones, entonces el sistema guarda el usuario responsable, la fecha y la decisión.
+  \item Dado que rechazo una propuesta, cuando guardo la decisión, entonces el estudiante recibe una notificación con las observaciones registradas.
+\end{itemize}
+Requisito: RF-02. Fuente: \enquote{Historias de Usuario}, HU-02.
+
+\subsubsection*{HU-03. Notificaciones automáticas}
+Como docente o estudiante, quiero recibir notificaciones automáticas de eventos relevantes para dar seguimiento oportuno al proceso de titulación.
+\begin{itemize}
+  \item Dado que se sube o valida un documento, cuando cambia su estado, entonces el sistema envía un correo institucional con el resumen del evento.
+  \item Dado que ocurre un fallo en el envío de la notificación, cuando no se puede notificar, entonces el sistema registra el error y permite reintentar el envío.
+\end{itemize}
+Requisito: RF-10. Fuente: \enquote{Historias de Usuario}, HU-03.
+
+\subsubsection*{HU-04. Registrar tutorías y actas}
+Como director o tutor, quiero registrar sesiones de tutoría y actas con firma digital para mantener un historial formal del avance del proyecto.
+\begin{itemize}
+  \item Dado que abro la ficha del estudiante, cuando registro la fecha, los temas tratados y adjunto el acta firmada, entonces la información queda almacenada en el historial y es visible para el estudiante.
+  \item Dado que la firma digital falla, cuando intento guardar el acta, entonces el sistema mantiene el registro con el estado \enquote{Pendiente de firma}.
+\end{itemize}
+Requisito: RF-05. Fuente: \enquote{Historias de Usuario}, HU-04.
+
+\subsubsection*{HU-05. Subir proyecto final}
+Como estudiante, quiero subir el proyecto final y obtener un comprobante para evidenciar formalmente la entrega.
+\begin{itemize}
+  \item Dado que cargo un archivo PDF final válido, cuando lo envío, entonces el sistema genera un comprobante descargable y notifica a los docentes evaluadores.
+  \item Dado que cancelo el proceso antes de enviar, cuando regreso a la plataforma, entonces no se crea ningún registro ni comprobante.
+\end{itemize}
+Requisitos: RF-05 y RF-07. Fuente: \enquote{Historias de Usuario}, HU-05.
+
+\subsubsection*{HU-06. Registrar observaciones del tribunal}
+Como miembro del tribunal, quiero registrar observaciones y calificaciones utilizando una rúbrica para estandarizar la evaluación del proyecto.
+\begin{itemize}
+  \item Dado que selecciono una rúbrica, cuando ingreso los puntajes y comentarios, entonces el sistema calcula el subtotal y guarda la información con firma digital.
+  \item Dado que falta completar algún criterio, cuando intento finalizar la evaluación, entonces el sistema impide el cierre y marca los campos obligatorios.
+\end{itemize}
+Requisito: RF-06. Fuente: \enquote{Historias de Usuario}, HU-06.
+
+\subsubsection*{HU-07. Generar acta de calificación}
+Como director, quiero generar y firmar el acta de calificación para formalizar el resultado final del proceso de titulación.
+\begin{itemize}
+  \item Dado que todas las calificaciones están completas, cuando genero el acta, entonces el sistema crea el PDF institucional con los datos y firmas requeridas.
+  \item Dado que falta una calificación, cuando intento generar el acta, entonces el sistema indica de forma explícita qué elemento está pendiente.
+\end{itemize}
+Requisito: RF-08. Fuente: \enquote{Historias de Usuario}, HU-07.
+
+\subsubsection*{HU-08. Validar documentos habilitantes}
+Como coordinación de carrera, quiero validar los documentos habilitantes para autorizar la etapa de legalización del proceso de titulación.
+\begin{itemize}
+  \item Dado que reviso la lista de documentos, cuando marco un documento como \enquote{Válido} o \enquote{Inválido} y registro observaciones, entonces el sistema guarda el resultado y notifica al estudiante.
+  \item Dado que un documento está corrupto, cuando intento abrirlo, entonces el sistema muestra un mensaje de error y sugiere realizar una nueva carga.
+\end{itemize}
+Requisito: RF-09. Fuente: \enquote{Historias de Usuario}, HU-08. El documento la asocia a CU-11, pero la validación de documentos habilitantes está descrita en CU10; CU11 es la validación del acta de calificación.
+
+\subsection{Historias nuevas para los requisitos sin historia}
+
+\subsubsection*{HU-09. Asignar director y tribunal}
+Como coordinador de carrera, quiero preparar con ayuda del sistema la propuesta de director y tribunal para cada propuesta aprobada, y registrar la designación que emite el Consejo Directivo de Facultad, para que el estudiante pueda empezar las tutorías y después ser evaluado.
+\begin{itemize}
+  \item Dado que una propuesta está aprobada, cuando pido una sugerencia, entonces el sistema propone docentes de la UTEQ según su especialidad y su disponibilidad, y muestra cuántos dirigidos tiene ya cada uno.
+  \item Dado que el Consejo Directivo emitió su resolución, cuando registro el número de resolución, el director y los miembros del tribunal, entonces el sistema guarda quién lo registró y en qué fecha, y notifica al estudiante y a los docentes designados.
+  \item Dado que la propuesta no está aprobada, cuando intento registrar director o tribunal, entonces el sistema no lo permite.
+  \item Dado que la designación se registra después de los primeros 15 días hábiles del último nivel, cuando se guarda, entonces el sistema la marca como fuera del plazo del reglamento.
+  \item Dado que la coordinación definió un cupo de dirigidos para el periodo, cuando un docente lo supera, entonces el sistema avisa antes de guardar. Si no hay cupo definido, no hay aviso.
+\end{itemize}
+Requisito: RF-03. Fuente: \enquote{Requisitos Funcionales} (RF-03: asignar automática o manualmente un director y tribunal considerando disponibilidad y especialidad), \enquote{Tabla de Trazabilidad} y el Reglamento de la UIC: Art.~49, literal b (el Consejo Directivo designa director y tribunal en los primeros 15 días hábiles del último nivel), Art.~52 (perfil del director) y Art.~55 (integrantes del tribunal). La tabla de trazabilidad asocia RF-03 a \enquote{CU08 -- Asignar Director y Tribunal} como caso de uso nuevo, pero en la sección de casos de uso CU08 es \enquote{Registrar notas parciales}, así que ese caso de uso todavía no está descrito. El reglamento no fija un número máximo de dirigidos por docente (Art.~52 a 55), así que el cupo del último criterio es un parámetro opcional de la coordinación; la idea viene de GradAssign~\cite{grzelak2026gradassign}.
+
+\subsubsection*{HU-10. Registrar y calificar el anteproyecto final}
+Como estudiante, quiero registrar la versión final de mi anteproyecto en formularios por secciones para que el docente de Titulación I lo califique y quede constancia de la nota.
+\begin{itemize}
+  \item Dado que estoy habilitado en la fase de anteproyecto final, cuando completo los formularios y los envío, entonces el sistema valida los campos obligatorios, guarda el anteproyecto y notifica al docente de Titulación I y al director.
+  \item Dado que dejé campos incompletos o con información inconsistente, cuando intento enviar, entonces el sistema muestra qué falta y no registra el envío.
+  \item Dado que soy el docente de Titulación I, cuando califico el anteproyecto, entonces el sistema guarda la calificación con observaciones y fecha, y el estudiante la puede ver.
+\end{itemize}
+Requisito: RF-04. Fuente: \enquote{Requisitos Funcionales} (RF-04) y CU03, \enquote{Registrar anteproyecto final} (precondición, flujo principal y flujo alternativo).
+
+\subsubsection*{HU-11. Legalizar documentos con autenticidad verificada}
+Como asesoría legal, quiero registrar la legalización del acta y de los documentos del expediente solo cuando están validados y no cambiaron desde su validación, para que la documentación legalizada sea auténtica.
+\begin{itemize}
+  \item Dado que el acta del estudiante está validada, cuando registro la legalización, entonces el sistema la guarda con fecha y hora y notifica al estudiante y a la coordinación de carrera.
+  \item Dado que el acta no está validada, cuando intento legalizar, entonces el sistema impide completar la legalización y registra el incidente.
+  \item Dado que la coordinación validó un documento, cuando se guarda la validación, entonces el sistema registra una huella SHA-256 del archivo; al legalizar, si la huella ya no coincide, marca el documento como alterado y no permite continuar.
+\end{itemize}
+Requisito: RF-09 (validar la autenticidad de los documentos legales y almacenarlos de forma segura). Fuente: \enquote{Requisitos Funcionales} (RF-09), CU10, \enquote{Validar documentos habilitantes}, y CU13, \enquote{Legalizar documentación de titulación}. El tercer criterio es una propuesta del equipo para que la autenticidad que pide RF-09 se pueda comprobar; el documento de Aplicaciones Web no dice cómo verificarla.
+
+\subsubsection*{HU-12. Aprobar el tema antes de la propuesta}
+Como estudiante, quiero registrar el tema de mi anteproyecto y saber si la comisión formativa lo aprueba antes de preparar la propuesta completa, para no trabajar sobre un tema que después será rechazado.
+\begin{itemize}
+  \item Dado que registro un tema dentro de las fechas del cronograma académico, cuando lo envío, entonces queda pendiente de revisión y la comisión formativa lo ve en su lista.
+  \item Dado que la comisión aprueba o rechaza el tema, cuando guarda la decisión con observaciones, entonces el sistema notifica al estudiante; sin observaciones no permite guardar un rechazo.
+  \item Dado que mi tema no está aprobado, cuando intento cargar la propuesta formal (HU-01), entonces el sistema no lo permite.
+\end{itemize}
+Requisito: RF-11. Fuente: \enquote{Requisitos Funcionales} (RF-11), \enquote{Tabla de Trazabilidad} (CU01, CU02 y la restricción RB-03 sobre fechas del cronograma) y el flujo alternativo de CU02, que impide terminar la validación sin observaciones.
+
+\subsubsection*{HU-13. Planificar reuniones de tutoría}
+Como director, quiero planificar las reuniones con mi estudiante indicando fecha, hora, modalidad y objetivo, para que las tutorías queden agendadas y luego se registren en su acta.
+\begin{itemize}
+  \item Dado que tengo un estudiante asignado, cuando creo una reunión con fecha, hora, modalidad y objetivo, entonces el sistema la guarda y notifica al estudiante.
+  \item Dado que el estudiante no tiene director asignado, cuando se intenta planificar una reunión, entonces el sistema no lo permite.
+  \item Dado que la reunión ya ocurrió, cuando registro el acta (HU-04), entonces el sistema trae la fecha, la hora y el objetivo planificados y pide lugar, participantes y acuerdos.
+  \item Dado que falta una semana para cerrar un corte evaluativo, cuando el estudiante tiene menos de cinco asesorías registradas en ese corte, entonces el sistema avisa al director.
+\end{itemize}
+Requisito: RF-12. Fuente: \enquote{Requisitos Funcionales} (RF-12), CU04, \enquote{Gestionar tutorías} (precondición y campos de la reunión), la observación sobre RF-05 de \enquote{Validación de Requisitos}, que pide en las actas lugar, fecha y hora, participantes, objetivos, acuerdos y firmas, y el Reglamento de la UIC, Art.~57, numeral 1 (mínimo cinco asesorías por corte evaluativo, con informes y actas enviados en la última semana del corte).
