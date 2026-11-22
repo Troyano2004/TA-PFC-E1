@@ -1,0 +1,33 @@
+\section{Tabla de aportes}\label{sec:aportes}
+
+% Cómo llenar las columnas de enlaces:
+%   \commit{a1b2c3d}  enlaza el commit con ese hash corto
+%   \issue{12}        enlaza el issue número 12
+% Lista de commits de cada uno, desde la carpeta del repositorio:
+%   git log --author="<nombre o correo>" --date=short --format="%h  %ad  %s"
+
+\begingroup
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{longtable}{@{}L{2.9cm}L{1.9cm}L{4.7cm}L{2.7cm}L{2.7cm}@{}}
+\caption{Aportes de cada integrante en E1}\label{tab:aportes}\\
+\toprule
+Integrante & Rol & Qué hizo & Commits & Issues \\
+\midrule
+\endfirsthead
+\toprule
+Integrante & Rol & Qué hizo & Commits & Issues \\
+\midrule
+\endhead
+\endfoot
+\bottomrule
+\endlastfoot
+\integranteA & \rolA & ADR-001 y ADR-002; diagramas C4 de contexto y de contenedores; modelo de comunicación y análisis CAP/PACELC; redacción y compilación del documento. & \pendiente{commits} & \pendiente{issues} \\
+\midrule
+\integranteB & \rolB & Tablero e issues de E1 y E2; servicios ms-usuarios y ms-propuestas con sus pruebas; instrucciones de ejecución del esqueleto y capturas; plan del proyecto. & \pendiente{commits} & \pendiente{issues} \\
+\midrule
+\integranteC & \rolC & Requisitos no funcionales con ISO/IEC 25010; análisis de riesgos, incluidos los derivados de FORM-AC-01; referencias verificadas. & \pendiente{commits} & \pendiente{issues} \\
+\midrule
+\integranteD & \rolD & Evidencias de levantamiento y fotografías; trabajos relacionados; bitácora; tabla de aportes; guion y edición del video. & \pendiente{commits} & \pendiente{issues} \\
+\end{longtable}
+\endgroup
