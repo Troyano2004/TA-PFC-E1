@@ -1,0 +1,23 @@
+\section{Registros de decisiones de arquitectura}\label{sec:adr}
+
+Los ADR completos están en Markdown en \texttt{docs/adr/} del repositorio. Aquí va un resumen de cada uno.
+
+\subsection{ADR-001: estilo de arquitectura}
+
+\textit{Contexto.} uteq-export es un monolito Spring Boot con una sola base PostgreSQL. La carga se junta en las fechas límite, un fallo de memoria en cualquier módulo detiene la recepción de documentos y cada cambio de reglas obliga a redesplegar todo. La asignatura pide microservicios en E2.
+
+\textit{Opciones.} (A) Mantener el monolito y escalarlo en vertical; Blinowski et al.~\cite{blinowski2022monolithic} muestran que en una sola máquina rinde mejor, pero no resuelve el aislamiento de fallos ni el despliegue independiente. (B) Monolito modular con réplicas detrás de un balanceador; Velepucha y Flores~\cite{velepucha2023survey} lo relacionan con el principio de ocultamiento de información de Parnas, pero sigue siendo un solo despliegue y las réplicas son copias completas. (C) Microservicios por subdominio, extraídos de uteq-export de forma gradual; Söylemez et al.~\cite{soylemez2022challenges} agrupan en nueve categorías los problemas de adoptarlos y recomiendan contrastarlos con los requisitos del proyecto.
+
+\textit{Decisión.} Opción C, con dos reglas: un servicio por subdominio y no por entidad, y ningún servicio lee la base de datos de otro. La división sigue los subdominios que ya existen en el código; Abgaz et al.~\cite{abgaz2023decomposition} revisaron 35 estudios y concluyen que todavía no hay métodos maduros para partir un monolito, así que preferimos un criterio simple que podamos explicar. Lo no migrado sigue en uteq-export y el gateway le envía esas rutas.
+
+\textit{Consecuencias.} Se puede escalar solo ms-documentos, un fallo queda aislado y cada servicio se despliega por su cuenta. A cambio aparecen la latencia de red, la falta de transacciones entre bases, más infraestructura y una depuración más difícil; se manejan con tiempos límite, estados y eventos, Docker Compose e identificadores de correlación en los logs. En E2 medimos el monolito con la misma prueba de carga que usaremos en E4, como recomiendan Auer et al.~\cite{auer2021monolithic}.
+
+\subsection{ADR-002: mecanismo de comunicación}
+
+\textit{Contexto.} Hay tres clases de interacción: consultas y órdenes del usuario, que esperan respuesta; validaciones entre servicios, que también la esperan; y avisos de algo que ya pasó, que nadie espera. El frontend corre en el navegador y el equipo ya trabaja con REST.
+
+\textit{Opciones.} (A) REST síncrono para todo. (B) gRPC entre servicios y REST hacia el navegador. (C) Mensajería asíncrona para todo. (D) REST como mecanismo principal y mensajería solo para los avisos.
+
+\textit{Decisión.} Opción D. REST con JSON para lo que espera respuesta, con tiempo límite configurable en toda llamada entre servicios y respuesta 503 si el otro no contesta; solo se reintentan las peticiones GET. RabbitMQ para los eventos de cambio de estado, con id único por evento y consumidores que descartan los repetidos. Se eligió RabbitMQ sobre Kafka por los resultados de Kamiński et al.~\cite{kaminski2025rabbitmq} con Spring Boot.
+
+\textit{Consecuencias.} El esqueleto de E1 ya usa este mecanismo y se prueba con \texttt{curl}. Si fallan ms-notificaciones o el correo, guardar una nota u observación no falla. A cambio hay acoplamiento temporal en las llamadas REST: con ms-usuarios apagado, ms-propuestas responde 503. Desde E2 se agrega caché de datos de usuario y un cortocircuito con Resilience4j, y una petición del usuario no atraviesa más de dos saltos entre servicios.
