@@ -1,0 +1,39 @@
+\section{Trabajos relacionados}\label{sec:trabajos}
+
+Estos tres trabajos publicados atacan partes del mismo problema: llevar a un sistema el proceso de titulación que hoy depende de papel, hojas de cálculo y correos. Los tres tienen DOI comprobado en Crossref (apéndice~\ref{sec:verificacion}).
+
+\subsection{GradAssign: asignación de tesistas a directores}
+
+Grzelak y Sasak-Okoń~\cite{grzelak2026gradassign}, de la Universidad Maria Curie-Skłodowska de Lublin (Polonia), presentan un sistema de apoyo a la decisión que asigna estudiantes de tesis a directores. Cada estudiante entrega una lista ordenada de los directores que prefiere, los estudiantes con mejores notas tienen prioridad y cada director tiene un cupo máximo. Los autores eligieron reglas transparentes y deterministas, que la administración pueda controlar, en lugar de buscar la solución teóricamente óptima. Lo probaron con simulaciones y con un despliegue real: los estudiantes con mejor rendimiento quedaron con sus preferencias y todos recibieron director sin pasar los cupos.
+
+De este trabajo tomamos la idea de que cada docente tenga un cupo máximo de dirigidos y de que la regla de asignación sea repetible y se pueda explicar a quien reclame. En SIC-UTEQ la asignación de director la hace la coordinación de carrera en ms-propuestas (HU-09), y el cupo sirve para avisarle cuando un docente ya está lleno. La diferencia es de alcance: GradAssign resuelve un solo paso del proceso y SIC-UTEQ cubre el flujo completo, desde la propuesta hasta el acta, con varios roles y repartido en servicios.
+
+\subsection{Marco para implantar un sistema web de gestión de tesis}
+
+Abdul-Salaam~\cite{abdulsalaam2024framework} estudió, con cuestionarios y entrevistas, la gestión manual de tesis en colegios de educación de Nigeria. Encontró que un sistema web mejora la eficiencia, la comunicación y el control de calidad, pero también barreras para adoptarlo: infraestructura de TI débil, poco personal técnico, costo de implantación y resistencia al cambio. Propone un marco de adopción en etapas: evaluación y planificación, requisitos técnicos, capacitación y soporte, y seguimiento continuo.
+
+Tomamos de este trabajo su forma de levantar información, parecida a la nuestra, y las barreras que encontró, que usamos para revisar nuestros riesgos. La resistencia al cambio y la capacitación de docentes no son riesgos técnicos, pero las tenemos en cuenta en el plan. La diferencia es que ese trabajo propone un marco para adoptar un sistema sin construirlo, mientras que nosotros construimos el sistema y medimos su comportamiento con requisitos cuantificados (sección~\ref{sec:rnf}).
+
+\subsection{Sistema para presentar títulos de tesis basado en servicios web}
+
+Ridwan, Khairil y Andry~\cite{ridwan2024thesis} construyeron un sistema web para que los estudiantes de la carrera de Sistemas de Información de la Universidad Dehasen, en Bengkulu (Indonesia), presenten el título de su tesis. Antes, el programa recopilaba las solicitudes una por una en Microsoft Excel, con errores de digitación y con el riesgo de que dos estudiantes presentaran el mismo título. El sistema está hecho en PHP con MySQL.
+
+De aquí tomamos el control de títulos repetidos al registrar la propuesta, que en SIC-UTEQ va en ms-propuestas, dueño de las propuestas. La diferencia es que el suyo es una sola aplicación con una sola base de datos para un programa y una etapa del proceso, y SIC-UTEQ separa el proceso en servicios con su propia base de datos, que se escalan por partes en las fechas de entrega y siguen funcionando aunque falle uno de ellos.
+
+\subsection{Comparación}
+
+\begin{table}[ht]
+\centering
+\footnotesize
+\caption{Comparación con los trabajos relacionados}\label{tab:comparacion}
+\begin{tabularx}{\textwidth}{@{}L{2.6cm}YYYY@{}}
+\toprule
+Aspecto & GradAssign~\cite{grzelak2026gradassign} & Abdul-Salaam~\cite{abdulsalaam2024framework} & Ridwan et al.~\cite{ridwan2024thesis} & SIC-UTEQ \\
+\midrule
+Etapa del proceso & Asignación de director & Todo el proceso, como propuesta de adopción & Presentación del título & Desde la propuesta hasta el acta \\
+¿Sistema construido? & Sí, desplegado & No, es un marco & Sí & Sí \\
+Arquitectura & El resumen no la describe & No aplica & Aplicación web con una base de datos & Microservicios con una base de datos por servicio \\
+Qué tomamos & Cupo por docente y reglas explicables & Barreras de adopción y plan por etapas & Control de títulos repetidos & \\
+\bottomrule
+\end{tabularx}
+\end{table}
