@@ -1,23 +1,2 @@
 \section{Declaración de uso de inteligencia artificial}\label{sec:ia}
-
-\textit{Herramienta y versión.} Claude, de Anthropic, modelo Claude Opus 5.5, usado desde Claude Code en la aplicación de escritorio para Windows, entre el 20 y el 22 de noviembre de 2026.
-
-\textit{Para qué se usó.} El equipo usó Claude Code en todas las secciones de este documento, en el esqueleto, en los ADR, en los diagramas y en la búsqueda de referencias:
-\begin{itemize}
-  \item Borradores de todas las secciones del documento y de los ADR, y la conversión del material a \LaTeX. El resumen, el contexto, los objetivos y los requisitos funcionales se redactaron a partir del documento de requisitos de Aplicaciones Web del equipo y del Reglamento de la UIC; las historias HU-01 a HU-08 se copiaron de ese documento. Los riesgos R-08 a R-10 se redactaron a partir de las lecciones que el equipo ya había escrito en FORM-AC-01.
-  \item Código del esqueleto (ms-usuarios y ms-propuestas), sus pruebas automáticas y el script que crea los issues.
-  \item Generación de los diagramas C4 en formato draw.io y su exportación a las figuras del documento.
-  \item Búsqueda de referencias y consulta de sus metadatos en Crossref.
-\end{itemize}
-
-\textit{Para qué no se usó.} La entrevista con la coordinación de carrera, la consulta a docentes, las fotografías y la grabación son trabajo del equipo. Claude Code no aportó datos de la entrevista: el documento no atribuye frases a la entrevistada ni a los docentes.
-
-\textit{Cómo lo verificó el equipo.}
-\begin{itemize}
-  \item El código se compiló y pasó sus 9 pruebas automáticas; luego se ejecutaron los dos servicios y se comprobaron la respuesta combinada, el 404 y el 503 con ms-usuarios apagado. Las capturas de la sección~\ref{sec:esqueleto} son de esa ejecución.
-  \item Cada referencia con DOI se comparó con lo que registra Crossref; se descartaron cinco que no coincidían. El informe de Meta se comprobó en su página (apéndice~\ref{sec:verificacion}).
-  \item Los diagramas se abrieron con el visor de draw.io para revisar que cada flecha coincida con la tabla~\ref{tab:interacciones}.
-  \item En el contexto, los objetivos y los requisitos, cada dato indica la sección del documento de Aplicaciones Web o el artículo del reglamento de donde sale. Lo que no tenía fuente se redactó sin cifras.
-  \item El documento se compiló con la secuencia del README (pdflatex, biber, pdflatex, pdflatex) sin errores.
-  \item Cada responsable revisó su parte antes de subirla al repositorio y debe poder explicarla sin ayuda.
-\end{itemize}
+Usamos Claude Opus 5.5 para buscar fuentes académicas con DOI verificable. Un ejemplo de prompt que usamos: \enquote{Busca artículos de revistas indexadas publicados entre 2021 y 2026 sobre arquitectura de microservicios, con DOI verificable}. También nos ayudó a armar el esqueleto de los archivos .tex, es decir, la estructura de las secciones y su conexión con el .bib, y a repartir los temas que le tocaba a cada integrante. Cada referencia la revisamos abriendo el artículo original y cada uno redactó su parte. El contenido final es responsabilidad del equipo.
