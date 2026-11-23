@@ -155,7 +155,7 @@ Los datos son ficticios: 6 usuarios (3 estudiantes, 2 docentes y 1 coordinador) 
 
 ## Video de presentación
 
-Pendiente.
+Enlace al video de presentación: https://drive.google.com/drive/folders/1ZEDSr69Gy8LO9-3fWkCDxHKzORE5Vhqv
 
 ## Compilación del documento
 
