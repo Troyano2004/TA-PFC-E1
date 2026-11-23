@@ -157,6 +157,15 @@ Los datos son ficticios: 6 usuarios (3 estudiantes, 2 docentes y 1 coordinador) 
 
 Enlace al video de presentación: https://drive.google.com/drive/folders/1ZEDSr69Gy8LO9-3fWkCDxHKzORE5Vhqv
 
+Partes de cada integrante:
+
+| Integrante | Rol | Video |
+|---|---|---|
+| Bueno Troya Erwin Daniel | Arquitecto | https://drive.google.com/file/d/1qszEgoOmt2goSX3YcI8aN4rRhFUnoobX/view?usp=sharing |
+| Mendoza Villarroel Elian Jossue | Líder de Desarrollo | https://drive.google.com/file/d/1kFoXy6jGxW0iS80BClQJqEdqynRrq-Q9/view?usp=sharing |
+| Zambrano Triviño Leonel Leonidas | Responsable de Calidad | https://drive.google.com/file/d/1zefec2fmq9gIBR-Za-sWRSBf6gF6teOz/view?usp=sharing |
+| Rivas Piloso Dayver Yahir | Responsable de Documentación | https://drive.google.com/drive/folders/1dLucAbG7ajinStyrY1H4kpts5t7voXKd?usp=sharing |
+
 ## Compilación del documento
 
 - Compilador: pdflatex (TeX Live o MiKTeX) con biber
