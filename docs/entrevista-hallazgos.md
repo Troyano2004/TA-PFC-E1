@@ -4,6 +4,7 @@
 
 - Entrevista con la Ing. Jessica Ponce, Coordinadora de la Carrera de Ingeniería de Software de la UTEQ, el jueves 19 de noviembre de 2026. Se grabó en video.
 - Enlace al video de la entrevista: https://drive.google.com/drive/folders/1HLHANzWTiUYHDHOlk-jD68KpwNUQuwF_?usp=sharing
+- Al inicio de la grabación, la Ing. Jessica Ponce da su consentimiento expreso para ser grabada.
 - Consulta complementaria a docentes de la carrera familiarizados con el proceso de titulación. Queda como respaldo la fotografía `evidencias/levantamiento/entrevista-docentes-01.png`.
 - Las demás fotografías de las entrevistas están en `evidencias/levantamiento/`.
 

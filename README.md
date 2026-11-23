@@ -17,6 +17,8 @@ Entrevista con la Ing. Jessica Ponce, Coordinadora de la Carrera de Ingeniería 
 
 Enlace al video de la entrevista: https://drive.google.com/drive/folders/1HLHANzWTiUYHDHOlk-jD68KpwNUQuwF_?usp=sharing
 
+Al inicio de la grabación, la Ing. Jessica Ponce da su consentimiento expreso para ser grabada.
+
 ## Estructura
 
 ```
